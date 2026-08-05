@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Token
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeStats
   Name: Token
+  upgradeType: 1
   id: 0
   MoneyPerSecond: 0.1
   MoneyPerClick: 0.1

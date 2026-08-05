@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Server
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeStats
   Name: Server
+  upgradeType: 3
   id: 2
   MoneyPerSecond: 25
   MoneyPerClick: 0.1

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class Upgrade : MonoBehaviour
 {
-    [SerializeField] private UpgradeStats upgradeStats;
+    public UpgradeStats upgradeStats;
     public float amountOwned = 0f;
     public float moneyPerSecondMultiplier = 1f;
     public float moneyPerClickMultiplier = 1f;
@@ -16,7 +16,9 @@ public class Upgrade : MonoBehaviour
     private BuyState buyState;
 
     [Header("Milestones")]
-    [SerializeField] private Dictionary<float, Modifier> milestones = new Dictionary<float, Modifier>();
+    [SerializeField] private List<int> milestoneAmount = new List<int>();
+    [SerializeField] private List<Modifier> milestoneUnlocks = new List<Modifier>();
+    private Dictionary<float, Modifier> milestones = new Dictionary<float, Modifier>();
 
     [Header("UI")]
     [SerializeField] private Button upgradeButton;
@@ -26,6 +28,11 @@ public class Upgrade : MonoBehaviour
 
     void Start()
     {
+        for (int i = 0; i < milestoneAmount.Count; i++)
+        {
+            milestones.Add(milestoneAmount[i], milestoneUnlocks[i]);
+        }
+
         price = upgradeStats.BasePrice;
         buyState = BuyState.SINGLE;
         UpdateGUI();
@@ -45,6 +52,12 @@ public class Upgrade : MonoBehaviour
                 newPrice += upgradeStats.BasePrice * Mathf.Pow(pricePerUnitMultiplier, amountOwned + i);
             }
             price = newPrice;
+
+            if (milestones.ContainsKey(amountOwned))
+            {
+                milestones[amountOwned].gameObject.SetActive(true);
+            }
+
             UpdateGUI();
         }
     }
@@ -83,7 +96,7 @@ public class Upgrade : MonoBehaviour
         UpdateGUI();
     }
 
-    private void UpdateGUI()
+    public void UpdateGUI()
     {
         amountDisplay.text = amountOwned.ToString();
         priceDisplay.text = "$" + ((Mathf.Round(price * 10f) * 0.1f)).ToString();
@@ -97,4 +110,12 @@ public enum BuyState
     SINGLE,
     TEN,
     HUNDRED
+}
+
+public enum UpgradeType
+{
+    NONE,
+    TOKEN,
+    EMPLOYEE,
+    SERVER
 }

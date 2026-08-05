@@ -5,8 +5,13 @@ using UnityEngine;
 public class ModifierStats : ScriptableObject
 {
     public String Name;
+    public UpgradeType AffectedUpgrade = UpgradeType.NONE;
     public int id;
-    public float AdditiveModifier;
-    public float Multiplier;
-    public float Price;
+    public String Description;
+    public float Multiplier = 1f;
+    public float Price = 0f;
+    [Header("Synergy Enhancements")]
+    public UpgradeType RequiredUpgrade = UpgradeType.NONE;
+    public int UpgradeAmountRequired = 0;
+    public float multiplierPerAmount = 1f;
 }

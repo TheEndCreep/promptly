@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public float money { get; private set; }
+    private float totalMoney;
     [SerializeField] private float generateContentButtonPower = 1f;
     [SerializeField] private TextMeshProUGUI moneyDisplay;
 
@@ -14,6 +15,11 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [SerializeField] private Button[] buyStateButtons = new Button[3];
+
+    [Header("Unlocks")]
+    [SerializeField] private List<int> milestoneThresholds = new List<int>();
+    [SerializeField] private List<GameObject> milestoneUnlocks = new List<GameObject>();
+    private Dictionary<int, GameObject> milestones = new Dictionary<int, GameObject>();
 
     void Awake()
     {
@@ -34,6 +40,11 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator Start()
     {
+        for (int i = 0; i < milestoneThresholds.Count; i++)
+        {
+            milestones.Add(milestoneThresholds[i], milestoneUnlocks[i]);
+        }
+
         while (true)
         {
             float amountToAdd = 0f;
@@ -60,7 +71,18 @@ public class GameManager : MonoBehaviour
     public void UpdateMoneyAmount(float amount)
     {
         money += amount;
+        if (amount > 0)
+        {
+            totalMoney += amount;
+        }
+
         moneyDisplay.text = "$" + (Mathf.Round(money * 10f) * 0.1f).ToString();
+
+        int milestoneCheck = Mathf.RoundToInt(totalMoney);
+        if (milestones.ContainsKey(milestoneCheck))
+        {
+            milestones[milestoneCheck].SetActive(false);
+        }
     }
 
     public void ChangeBuyAmount(BuyState newState)
