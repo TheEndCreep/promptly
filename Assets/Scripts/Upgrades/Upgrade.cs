@@ -35,11 +35,16 @@ public class Upgrade : MonoBehaviour
 
     public void PurchaseUpgrade()
     {
-        if (GameManager.Instance.money >= price * buyAmount)
+        if (GameManager.Instance.money >= price)
         {
-            GameManager.Instance.UpdateMoneyAmount(-price * buyAmount);
-            amountOwned++;
-            price = upgradeStats.BasePrice * Mathf.Pow(pricePerUnitMultiplier, amountOwned);
+            GameManager.Instance.UpdateMoneyAmount(-price);
+            amountOwned += buyAmount;
+            float newPrice = 0f;
+            for (int i = 0; i < buyAmount; i++)
+            {
+                newPrice += upgradeStats.BasePrice * Mathf.Pow(pricePerUnitMultiplier, amountOwned + i);
+            }
+            price = newPrice;
             UpdateGUI();
         }
     }
@@ -69,13 +74,19 @@ public class Upgrade : MonoBehaviour
         {
             buyAmount = 100;
         }
+        float newPrice = 0f;
+        for (int i = 0; i < buyAmount; i++)
+        {
+            newPrice += upgradeStats.BasePrice * Mathf.Pow(pricePerUnitMultiplier, amountOwned + i);
+        }
+        price = newPrice;
         UpdateGUI();
     }
 
     private void UpdateGUI()
     {
         amountDisplay.text = amountOwned.ToString();
-        priceDisplay.text = "$" + ((Mathf.Round(price * 10f) * 0.1f) * buyAmount).ToString();
+        priceDisplay.text = "$" + ((Mathf.Round(price * 10f) * 0.1f)).ToString();
         float moneyPerSecond = amountOwned * (upgradeStats.MoneyPerSecond * moneyPerSecondMultiplier);
         moneyPerSecondDisplay.text = "$" + (Mathf.Round(moneyPerSecond * 10f) * 0.1f).ToString() + "/sec";
     }
