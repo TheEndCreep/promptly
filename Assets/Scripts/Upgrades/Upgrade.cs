@@ -12,6 +12,8 @@ public class Upgrade : MonoBehaviour
     public float moneyPerClickMultiplier = 1f;
     public float pricePerUnitMultiplier = 1.1f;
     private float price;
+    private int buyAmount = 1;
+    private BuyState buyState;
 
     [Header("Milestones")]
     [SerializeField] private Dictionary<float, Modifier> milestones = new Dictionary<float, Modifier>();
@@ -25,25 +27,19 @@ public class Upgrade : MonoBehaviour
     void Start()
     {
         price = upgradeStats.BasePrice;
+        buyState = BuyState.SINGLE;
         UpdateGUI();
         upgradeButton.onClick.AddListener(PurchaseUpgrade);
+        GameManager.Instance.upgrades.Add(this);
     }
 
     public void PurchaseUpgrade()
     {
-        if (GameManager.Instance.money >= price)
+        if (GameManager.Instance.money >= price * buyAmount)
         {
-            if (amountOwned < 1)
-            {
-                GameManager.Instance.upgrades.Add(this);
-            }
-            GameManager.Instance.UpdateMoneyAmount(-price);
+            GameManager.Instance.UpdateMoneyAmount(-price * buyAmount);
             amountOwned++;
             price = upgradeStats.BasePrice * Mathf.Pow(pricePerUnitMultiplier, amountOwned);
-            if (milestones[amountOwned] != null)
-            {
-
-            }
             UpdateGUI();
         }
     }
@@ -58,11 +54,36 @@ public class Upgrade : MonoBehaviour
         return amountOwned * (upgradeStats.MoneyPerSecond * moneyPerSecondMultiplier);
     }
 
+    public void ChangeBuyState(BuyState newState)
+    {
+        buyState = newState;
+        if (buyState == BuyState.SINGLE)
+        {
+            buyAmount = 1;
+        }
+        else if (buyState == BuyState.TEN)
+        {
+            buyAmount = 10;
+        }
+        else if (buyState == BuyState.HUNDRED)
+        {
+            buyAmount = 100;
+        }
+        UpdateGUI();
+    }
+
     private void UpdateGUI()
     {
         amountDisplay.text = amountOwned.ToString();
-        priceDisplay.text = "$" + (Mathf.Round(price * 10f) * 0.1f).ToString();
+        priceDisplay.text = "$" + ((Mathf.Round(price * 10f) * 0.1f) * buyAmount).ToString();
         float moneyPerSecond = amountOwned * (upgradeStats.MoneyPerSecond * moneyPerSecondMultiplier);
         moneyPerSecondDisplay.text = "$" + (Mathf.Round(moneyPerSecond * 10f) * 0.1f).ToString() + "/sec";
     }
+}
+
+public enum BuyState
+{
+    SINGLE,
+    TEN,
+    HUNDRED
 }

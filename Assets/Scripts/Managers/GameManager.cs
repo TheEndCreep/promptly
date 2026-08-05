@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class GameManager : MonoBehaviour
 
     public List<Upgrade> upgrades = new List<Upgrade>();
     public static GameManager Instance;
+
+    [SerializeField] private Button[] buyStateButtons = new Button[3];
 
     void Awake()
     {
@@ -23,6 +26,10 @@ public class GameManager : MonoBehaviour
         {
             Destroy(this);
         }
+
+        buyStateButtons[0].onClick.AddListener(delegate { ChangeBuyAmount(BuyState.SINGLE); });
+        buyStateButtons[1].onClick.AddListener(delegate { ChangeBuyAmount(BuyState.TEN); });
+        buyStateButtons[2].onClick.AddListener(delegate { ChangeBuyAmount(BuyState.HUNDRED); });
     }
 
     private IEnumerator Start()
@@ -54,5 +61,13 @@ public class GameManager : MonoBehaviour
     {
         money += amount;
         moneyDisplay.text = "$" + (Mathf.Round(money * 10f) * 0.1f).ToString();
+    }
+
+    public void ChangeBuyAmount(BuyState newState)
+    {
+        foreach (Upgrade upgrade in upgrades)
+        {
+            upgrade.ChangeBuyState(newState);
+        }
     }
 }

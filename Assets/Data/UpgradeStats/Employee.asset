@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Employee
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeStats
   Name: Employee
+  id: 1
   MoneyPerSecond: 1
   MoneyPerClick: 0.1
   BasePrice: 100
